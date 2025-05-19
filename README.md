@@ -1,72 +1,98 @@
-# Φίλτρο FIR για Σήμα EMG (Arduino Uno)
+# ⚡ FIR Band-Pass Filter for EMG Signal (Arduino Uno)
 
-Αυτό το πρόγραμμα υλοποιεί ένα **ψηφιακό FIR φίλτρο ζώνης διέλευσης (band-pass)** σε πλατφόρμα **Arduino Uno**, για την ανάλυση και φιλτράρισμα **σήματος EMG (ηλεκτρομυογραφήματος)**.
-
----
-
-## 🎯 Στόχος
-
-Να φιλτραριστεί το σήμα EMG ώστε να διατηρούνται μόνο οι συχνότητες μεταξύ **10–500 Hz**, απορρίπτοντας:
-- Θόρυβο χαμηλής συχνότητας (κινήσεις, DC offset)
-- Θόρυβο υψηλής συχνότητας (ηλεκτρονικός/ψηφιακός θόρυβος)
+This project implements a **digital FIR band-pass filter** on an **Arduino Uno** to process and clean up **EMG (Electromyography) signals** in real time.
 
 ---
 
-## ⚙️ Χαρακτηριστικά
+## 🎯 Objective
 
-- **Τύπος φίλτρου**: FIR (Finite Impulse Response)
-- **Εύρος Συχνοτήτων**: 10 Hz έως 500 Hz
-- **Ρυθμός Δειγματοληψίας**: 2000 Hz (κάθε 500 μικροδευτερόλεπτα)
-- **Αριθμός Συντελεστών (taps)**: 21
-- **Ανάλυση Εισόδου**: 10-bit ADC (0–1023) μετατρέπεται σε τάση (0–5V)
-- **Έξοδος**: Απευθείας στο **Serial Plotter** της Arduino IDE
+To filter the EMG signal and retain only the frequencies between **10–500 Hz**, removing:
+
+- Low-frequency drift and motion artifacts (e.g., baseline or DC offset)
+- High-frequency electronic and environmental noise
 
 ---
 
-## 🧠 Πώς λειτουργεί ο κώδικας
+## ⚙️ Specifications
 
-1. **Ανάγνωση του σήματος EMG** από την είσοδο A0 μέσω της `analogRead()`
-2. **Μετατροπή** σε τάση (0–5V)
-3. Το σήμα αποθηκεύεται σε **buffer** που κρατά τις τελευταίες 21 τιμές
-4. Εφαρμόζεται **συνέλιξη (convolution)** του buffer με τους συντελεστές του φίλτρου
-5. Η φιλτραρισμένη έξοδος εμφανίζεται στο **Serial Plotter**
-
----
-
-## 🧪 Πλεονεκτήματα FIR
-
-- Εύκολη κατανόηση: απλώς πολλαπλασιάζεις και προσθέτεις
-- Σταθερότητα: δεν υπάρχει ανατροφοδότηση (feedback)
-- Διατήρηση φάσης: δεν παραμορφώνεται το σχήμα του σήματος
+| Parameter              | Value                           |
+|------------------------|---------------------------------|
+| Filter Type            | FIR (Finite Impulse Response)   |
+| Filter Band            | 10 Hz – 500 Hz                  |
+| Sampling Rate          | 2000 Hz (every 500 µs)          |
+| Number of Taps         | 21                              |
+| ADC Resolution         | 10-bit (0–1023)                 |
+| Voltage Range          | 0–5 V                           |
+| Output Display         | Arduino Serial Plotter          |
 
 ---
 
-## 📈 Τρόπος χρήσης
+## 🧠 How the Arduino Code Works
 
-1. Συνδέστε την έξοδο του αισθητήρα EMG στο **A0**
-2. Ανεβάστε τον κώδικα στον Arduino Uno
-3. Ανοίξτε το **Tools > Serial Plotter**
-4. Βάλτε το **baud rate** στα **115200**
-5. Παρακολουθήστε το φιλτραρισμένο σήμα σε πραγματικό χρόνο
-
----
-
-# Δημιουργία Συντελεστών FIR Φίλτρου με Python
-
-Αυτό το Python script δημιουργεί συντελεστές για **FIR φίλτρα ζώνης διέλευσης (band-pass)** που μπορούν να ενσωματωθούν σε συσκευές όπως Arduino για φιλτράρισμα σημάτων, π.χ. EMG.
+1. Reads the EMG signal from analog pin `A0` using `analogRead()`.
+2. Converts the raw value to voltage (0–5V).
+3. Maintains a **circular buffer** of the last 21 input values.
+4. Applies **convolution** between the buffer and FIR filter coefficients.
+5. Outputs the **filtered signal** to the Serial Plotter for visualization.
 
 ---
 
-## 🎯 Στόχος
+## ✅ Why FIR?
 
-Να παραχθούν **FIR coefficients** που:
-- Αφαιρούν ανεπιθύμητες συχνότητες (DC offset, θόρυβο)
-- Διατηρούν το ωφέλιμο φάσμα 10–500 Hz (για EMG)
-- Μπορούν να ενσωματωθούν σε Arduino ως πίνακας
+- **Simple to implement**: No feedback or recursion required.
+- **Stable**: Always stable regardless of coefficient values.
+- **Linear phase**: Preserves the shape of the EMG waveform.
 
 ---
 
-## 📦 Απαιτούμενες βιβλιοθήκες
+## 🚀 Getting Started
+
+### 🧰 Hardware
+
+- Arduino Uno
+- EMG sensor (e.g. MyoWare, Olimex EMG, etc.)
+- USB cable
+
+### 🧪 Software
+
+- Arduino IDE
+- Python (for filter coefficient generation)
+
+---
+
+## 🔌 How to Use It
+
+1. Connect the EMG sensor output to analog pin `A0` on the Arduino Uno.
+2. Upload `fir_filter_4th.ino` to the Arduino Uno.
+3. Open **Tools > Serial Plotter** in the Arduino IDE.
+4. Set **baud rate** to `115200`.
+5. You’ll see the real-time **filtered EMG signal** plotted live.
+
+---
+
+## 🧮 FIR Coefficient Generator (Python)
+
+The Python script `coeff_calculator.py` generates FIR filter coefficients in **C array format** that can be pasted into the Arduino sketch.
+
+### 📦 Install dependencies
 
 ```bash
 pip install scipy numpy
+```
+
+## 📁 File Structure
+
+```
+.
+├── fir_filter_4th.ino         # Arduino sketch with FIR filter
+├── coeff_calculator.py        # Python script to generate FIR coefficients
+└── README.md                  # Project documentation
+```
+
+---
+
+## 📝 License
+
+This project is released under the [MIT License](LICENSE).
+
+---
